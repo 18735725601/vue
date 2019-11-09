@@ -1,18 +1,7 @@
 <template>
    <section class="msite">
-        <!--首页头部-->
-        <!-- <header class="header">
-            <span class="header_search">
-              <i class="iconfont icon-sousuo"></i>
-            </span>
-          <span class="header_title">
-              <span class="header_title_text ellipsis">昌平区北七家宏福科技园(337省道北)</span>
-            </span>
-          <span class="header_login">
-              <span class="header_login_text">登录|注册</span>
-            </span>
-        </header> -->
-        <GshopHeader title="昌平区北七家宏福科技园(337省道北)">
+        
+        <GshopHeader :title="address.name?address.name:'定位中...'">
            <template v-slot:right>
              <span  slot="right" class="header_login">
             <span class="header_login_text">登录|注册</span>
@@ -326,8 +315,26 @@
 </template>
 
 <script>
-export default {
+import Swiper from 'swiper'
+import 'swiper/css/swiper.min.css'
+// import moduleName from 'module'
 
+import {mapState} from 'vuex'
+
+export default {
+ async mounted(){
+   this.$store.dispatch('getAddressAction')
+   this.$store.dispatch('getCategorysAction')
+  //  let result = await getAddress(40.10038,116.36867)
+  //  console.log(result) 
+ },
+  computed:{
+    // ...mapState(['address'])
+   ...mapState({
+        address: state => state.address,
+        categorys: state => state.categorys
+      }),
+  }
 }
 </script>
 
