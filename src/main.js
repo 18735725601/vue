@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 import 'lib-flexible/flexible'
+import './veevalidate'
+import * as API from './api'
 
 
 import router from './router'
 import store from './store'
 import GshopHeader from './components/GshopHeader/GshopHeader'
+
+Vue.prototype.$API = API
 
 // Vue全局注册组件的语法： Vue.component(组件名，组件)
 Vue.component('GshopHeader', GshopHeader)
