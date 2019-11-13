@@ -7,7 +7,10 @@ export const getAddress = (latitude,longitude)=>ajax({
 /*  获取食品分类列表 */
 
 export const getCategorys = () => ajax({
-  url: '/index_category'
+  url: '/index_category',
+  headers: {
+    needToken: true
+  }
 })
 /*  根据经纬度获取商铺列表 */
 export const getShops = (latitude, longitude) => ajax({
@@ -15,6 +18,9 @@ export const getShops = (latitude, longitude) => ajax({
   params: {
     latitude,
     longitude
+  },
+  headers: {
+    needToken: true
   }
 })
 
@@ -46,3 +52,15 @@ export const sendCode = phone => ajax({
     phone
   }
 })
+
+
+/*  自动登录 */
+export const autoLogin = ()=>ajax({
+  url:'/auto_login',
+  headers: {
+    needToken: true
+  }
+
+})
+
+//测试mock数据

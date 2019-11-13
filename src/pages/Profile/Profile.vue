@@ -8,8 +8,8 @@
           <i class="iconfont icon-person_round_fill"></i>
         </div>
         <div class="user-info">
-          <p class="user-info-top" v-if="user.name">{{user.name?user.name:'登录/注册'}}</p>
-          <p v-if="user.phone">
+          <p class="user-info-top" v-if="!user.phone">{{user.name?user.name:'登录/注册'}}</p>
+          <p v-if="!user.name">
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
                 </span>
@@ -89,22 +89,43 @@
         </div>
       </a>
     </section>
+    <section class="profile_my_order border-1px">
+      <mt-button @click="logout" style="width:100%" type="primary">退出登录</mt-button>
+    </section>
   </section>
 </template>
 
 <script>
   import {mapState} from 'vuex'
+  import { MessageBox } from 'mint-ui';
+  // import {LOGOUT} from '../../store/mutation-type'
+   import {LOGOUT} from '../../store/mutaion-type'
   export default {
     methods: {
       toLogin(){
+        if (this.user._id) {
+          return
+        }
         this.$router.replace('/login')
+      },
+      logout(){
+        // 退出登录
+        MessageBox.confirm('确认退出登录吗')
+          .then(
+            actionAgrre => {this.$store.commit(LOGOUT);this.$router.replace('/login')},
+            actionReject => console.log('取消退出')
+          )
       }
     },
     computed: {
       ...mapState({
         user: state => state.user
       })
+    },
+    mounted(){
+      this.$store.dispatch('autoLoginAction')
     }
+
   }
 </script>
 

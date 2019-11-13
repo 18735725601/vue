@@ -38,7 +38,7 @@
               </section>
               <section class="login_verification">
                 <input v-model="pwd" name="pwd" v-validate="'required'" :type="isShowPassword?'tel':'password'" maxlength="8" placeholder="密码">
-                <span style="color:red;" v-show="errors.has('pwd')">{{errors.first('username')}}</span>
+                <span style="color:red;" v-show="errors.has('pwd')">{{errors.first('pwd')}}</span>
                 <div  @click="isShowPassword=!isShowPassword" class="switch_button off" :class="isShowPassword?'on':'off'">
                   <div class="switch_circle" :class="{right: isShowPassword}"></div>
                   <span class="switch_text">{{isShowPassword?'abc':'...'}}</span>
@@ -46,7 +46,7 @@
               </section>
               <section class="login_message">
                 <input v-model="captcha" name="captcha" v-validate="'required'" type="text" maxlength="11" placeholder="验证码">
-                <span style="color:red;" v-show="errors.has('captcha')">{{errors.first('username')}}</span>
+                <span style="color:red;" v-show="errors.has('captcha')">{{errors.first('captcha')}}</span>
                 <img ref="captcha" class="get_verification" @click="updateCaptcha" src="http://localhost:4000/captcha" alt="captcha">
               </section>
             </section>
@@ -65,6 +65,7 @@
 
 <script>
 import {loginWithPassword, loginWithPhone} from '../../api'
+import {Toast} from 'mint-ui'
   export default { 
     data(){
       return {
@@ -88,9 +89,9 @@ import {loginWithPassword, loginWithPhone} from '../../api'
         let {isPassWordLogin,name,  pwd, captcha, phone, code} = this
         let names = isPassWordLogin? ['username', 'pwd', 'captcha']: ['phone', 'code']//验证的表单里面的name
         const success = await this.$validator.validateAll(names)
-        //  console.log(success);
+         console.log(success);
          if (success) {
-           alert('前端验证成功')
+           Toast('前端验证成功')
            // 收集表单项数据，发送请求进行后端验证
           // let result = await loginWithPassword(name,  pwd, captcha)
           // 判断是否是用户名/密码登录
@@ -126,16 +127,16 @@ import {loginWithPassword, loginWithPhone} from '../../api'
             this.$router.replace('/profile')
           }
          }else{
-           alert('前端验证失败')
+           Toast('前端验证失败')
          }
       },
       async sendCode(){
         console.log('发送验证码');
         let result = await this.$API.sendCode(this.phone)
         if(result.code === 0){
-          alert('短信发送成功')
+          Toast('短信发送成功')
         }else {
-          alert('短信发送失败')
+          Toast('短信发送失败')
         }
         
         this.countDown = 10
