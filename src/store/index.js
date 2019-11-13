@@ -1,7 +1,7 @@
 //store对象
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import shop from './modules/shop'
+import shop from './modules/shop'
 
 
 
@@ -13,9 +13,9 @@ Vue.use(Vuex)
 
 //向外暴露store对象
 export default new Vuex.Store({
-  // modules:{
-  //   shop
-  // },
+  modules:{
+    shop
+  },
   state,
   mutations,
   actions,
