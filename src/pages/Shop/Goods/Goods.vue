@@ -1,12 +1,10 @@
 <template>
   <div id="goodContainer">
     <div class="leftContainer">
-      <ul class="navList">
-        <li class="navItem"  :class="{active: navIndex === index}" v-for="(good, index) in goods" :key="index">
+      <ul ref="leftUl" class="navList">
+        <li @click="changeNavIndex(index)" class="navItem"  :class="{active: navIndex === index}" v-for="(good, index) in goods" :key="index">
           <p>{{good.name}}</p>
         </li>
-        
-
       </ul>
     </div>
     <div class="rightContainer">
@@ -29,7 +27,7 @@
                   <span class="now">￥{{food.price}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  CartControl组件
+                  <CartControl :food="food"/>
                 </div>
               </div>
             </li>
@@ -38,12 +36,14 @@
       </ul>
 
     </div>
+    <ShopCart />
   </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
 import BScroll from 'better-scroll'
+import ShopCart from '../../../components/ShopCart/ShopCart'
 export default {
   data(){
     return {
@@ -51,6 +51,10 @@ export default {
       tops: [], // 记录右侧所有li到滑动页面顶部的距离
     }
   },
+  components:{
+    ShopCart
+  },
+
   
   async mounted(){
     if (this.goods) {
@@ -69,18 +73,28 @@ export default {
       }),
       navIndex(){
         let {tops, scrollY} = this
-        return   tops.findIndex((top, index) => scrollY >= top && scrollY < tops[index + 1])
+        let index =  tops.findIndex((top, index) => scrollY >= top && scrollY < tops[index + 1])
+        if(this.leftScroll && this.index !== index){
+          console.log('话都给了')
+          this.index = index
+          this.leftScroll.scrollToElement(this.$refs.leftUl.children[index],2000)
+        }
+        
+        return index
       }
+      
 
   },
   methods:{
     _initScroll(){
-    new BScroll('.leftContainer',{
+    this.leftScroll =new BScroll('.leftContainer',{
       scrollY: true,
+      click: true, // 允许点击
     })
     this.rightScroll=new BScroll('.rightContainer',{
       scrollY: true,
       probeType: 2,//实时
+      // click: true, // 允许点击
     })
     this.rightScroll.on('scroll',({x,y})=>{
       this.scrollY = Math.abs(y)
@@ -103,6 +117,10 @@ export default {
       }
       this.tops = tops
 
+    },
+    changeNavIndex(index){
+      this.scrollY  = this.tops[index]
+      this.rightScroll.scrollTo(0, -this.scrollY, 2000)
     }
     
     
@@ -128,7 +146,7 @@ export default {
     /*position absolute*/
     /*bottom 0*/
     /*top 224px*/
-    height calc(100vh - 224px)  /*vh, vw 1vh == 1%视口高度*/
+    height calc(100vh - 272px)  /*vh, vw 1vh == 1%视口高度*/
     .leftContainer
       width 80px
       .navList

@@ -11,10 +11,12 @@ import './mock/mockServer'
 import router from './router'
 import store from './store'
 import GshopHeader from './components/GshopHeader/GshopHeader'
+import CartControl from './components/CartControl/CatrControl.vue'
 
 Vue.prototype.$API = API
 
 Vue.component(Button.name, Button);
+Vue.component('CartControl', CartControl)
 
 
 // Vue全局注册组件的语法： Vue.component(组件名，组件)
