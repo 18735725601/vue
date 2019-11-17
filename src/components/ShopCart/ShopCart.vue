@@ -4,48 +4,112 @@
     <div class="content2">
       <div class="content-left">
         <div class="logo-wrapper">
-          <div class="logo ">
-            <i class="iconfont icon-iconset0308 highlight"></i>
+          <div @click="toggleCartShopShow" class="logo ":class="{highlight: totalCount}">
+            <i class="iconfont icon-iconset0308 " :class="{highlight:totalCount}"></i>
           </div>
-          <div class="num">1</div>
+          <div class="num" v-show="totalCount">{{totalCount}}</div>
         </div>
-        <div class="price highlight">￥10</div>
-        <div class="desc">另需配送费￥4元</div>
+          <div class="price " :class="{highlight: totalCount}">￥{{totalPrice}}</div>
+          <div class="desc" v-if="info">另需配送费￥{{info.deliveryPrice}}元</div>
       </div>
       <div class="content-right">
-        <div class="pay not-enough">
-          还差￥10元起送
-        </div>
+        <div class="pay " :class="payClass">
+            {{payText}}
+          </div>
       </div>
     </div>
-    <div class="shopcart-list" style="display: none;">
+    <transition name="move">
+      <div class="shopcart-list" v-show="isShowCartShop">
       <div class="list-header">
         <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
+        <span class="empty" @click="clearCart">清空</span>
       </div>
       <div class="list-content">
         <ul>
-          <li class="food">
-            <span class="name">红枣山药糙米粥</span>
-            <div class="price"><span>￥10</span></div>
+          <li class="food" v-for="(food,index) in cartShops" :key="index">
+            <span class="name">{{food.name}}</span>
+            <div class="price"><span>￥{{food.price}}</span></div>
             <div class="cartcontrol-wrapper">
-              <div class="cartcontrol">
-                <div class="iconfont icon-remove_circle_outline"></div>
-                <div class="cart-count">1</div>
-                <div class="iconfont icon-add_circle"></div>
-              </div>
+              <CartControl :food="food"/>
             </div>
           </li>
         </ul>
       </div>
     </div>
+    </transition>
   </div>
-  <div class="list-mask" style="display: none;"></div>
+  <div class="list-mask" @click="isShowCartShop = false" v-show="isShowCartShop"></div>
 </div>
 </template>
 
 <script type="text/ecmascript-6">
+import {mapGetters,mapState} from 'vuex'
+import {CLEAR_CARTSHOPS} from '../../store/mutaion-type'
+import BScroll from 'better-scroll'
+import {MessageBox} from 'mint-ui'
   export default {
+    data(){
+      return {
+        isShowCartShop: false
+      }
+    },
+    computed:{
+      ...mapGetters(['totalCount', 'totalPrice']),
+      ...mapState({
+        info:state=> state.shop.shopDatas.info,
+        cartShops:state=> state.shop.cartShops
+
+      }),
+      payClass(){
+        if(!this.info){
+          return
+        }
+        return this.totalPrice > this.info.minPrice?'enough':'not-enough'
+        
+      },
+      payText(){
+        if(!this.info){
+          return
+        }
+        // console.log('1')
+        let {totalPrice, info} = this
+        if(totalPrice === 0){
+          return `${info.minPrice}起送`
+        }else if(totalPrice>0 && totalPrice < info.minPrice){
+          return `还差${info.minPrice - totalPrice}配送`
+        }else {
+          return '去结算'
+        }
+        
+      }
+    },
+    methods:{
+      toggleCartShopShow(){
+        this.isShowCartShop = !this.isShowCartShop
+        // console.log(1)
+      },
+      clearCart(){
+        MessageBox.confirm('确认清空吗')
+          .then(
+            actionAgree => this.$store.commit(CLEAR_CARTSHOPS),
+            actionReject => console.log('取消清空')
+          )
+      }
+    },
+    watch:{
+      totalCount(newValue){
+        if(!this.BScroll){
+          this.BScroll = new BScroll('.list-content', {
+            // click: true,
+            scrollY: true
+          })
+        }else {
+          this.BScroll.refresh()//页面刷新
+        }
+        !!!newValue && (this.isShowCartShop = false)
+      }
+
+    }
   }
 </script>
 
@@ -143,6 +207,12 @@
       top: 0
       z-index: -1
       width: 100%
+      transform translateY(-100%)
+      &.move-enter-active, &.move-leave-active
+        transition all 1s
+      &.move-enter, &.move-leave-to
+        transform translateY(0)
+        opacity 0
       .list-header
         height: 40px
         line-height: 40px

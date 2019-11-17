@@ -12,6 +12,7 @@ import router from './router'
 import store from './store'
 import GshopHeader from './components/GshopHeader/GshopHeader'
 import CartControl from './components/CartControl/CatrControl.vue'
+import i18n from './i18n'
 
 Vue.prototype.$API = API
 
@@ -33,6 +34,6 @@ new Vue({
   components:{App},
   template:'<App/>',
   router,
+  i18n,
   store
-  
 })

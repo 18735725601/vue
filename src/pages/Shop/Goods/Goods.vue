@@ -57,6 +57,7 @@ export default {
 
   
   async mounted(){
+    //保证切换至评价，商家的时候在切换回来bscroll还能正常使用
     if (this.goods) {
       this._initScroll()
       this._initTops()
